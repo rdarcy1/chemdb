@@ -56,8 +56,9 @@ $factory->define(Structure::class, function (Faker $faker) {
         'n_rO'         => $faker->numberBetween(0, 10),
         'n_rO1'        => $faker->numberBetween(0, 10),
         'n_rO2p'       => $faker->numberBetween(0, 10),
-        'n_rAr'        => $faker->numberBetween(0, 10),
+        'n_rar'        => $faker->numberBetween(0, 10),
         'n_rX'         => $faker->numberBetween(0, 10),
         'n_rS'         => $faker->numberBetween(0, 10),
+        'molfile'      => 'fake molfile',
     ];
 });

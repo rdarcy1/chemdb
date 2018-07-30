@@ -14,6 +14,7 @@ $factory->define(Chemical::class, function (Faker $faker) {
     return [
         'name'              => $fakeName,
         'user_id'           => function() { return factory('App\User')->create()->id; },
+        'structure_id'      => function() { return factory('App\Structure')->create()->id; },
         'cas'               => $faker->numberBetween(10,50) . '-' . $faker->numberBetween(10,50) . '-' . $faker->numberBetween(10,50),
         'location'          => array_rand(['Fake lab I', 'Fake lab II', 'Fake lab III']),
         'number'            => $faker->numberBetween(10,400),

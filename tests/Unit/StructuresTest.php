@@ -429,9 +429,17 @@ class StructuresTest extends TestCase
       /** @test **/
     public function it_has_the_number_of_aromatic_rings()
     {
-        $structure = factory('App\Structure')->create(['n_rAr' => 1]);
+        $structure = factory('App\Structure')->create(['n_rar' => 1]);
 
-        $this->assertEquals(1, $structure->n_rAr);           
+        $this->assertEquals(1, $structure->n_rar);           
+    }
+
+    /** @test */
+    function it_has_a_molfile()
+    {
+       $structure = factory('App\Structure')->create(['molfile' => 'fake molfile']);
+       
+       $this->assertEquals('fake molfile', $structure->molfile);
     }
 
 }
