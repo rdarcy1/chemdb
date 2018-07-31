@@ -5,7 +5,6 @@ namespace App;
 class Checkmol
 {
     protected $binary = "/usr/local/bin/checkmol";
-    protected $output = "";
     protected $molfile;
 
     public function __construct($molfile)
@@ -19,15 +18,11 @@ class Checkmol
 
     public function properties()
     {
-        $pipe = popen('echo "' . $this->molfile . '" | ' . $this->binary . ' -x -', "r");
-        while(!feof($pipe)) {
-            $this->output .= fread($pipe, 1024);
-        }
-        pclose($pipe);
+        $propertiesString = BashCommand::run($this->molfile, $this->binary, '-x -');
 
-        $this->output = substr($this->output, 0, -2);
+        $propertiesString = substr($propertiesString, 0, -2);
 
-        $propertiesArray = collect(explode(';', $this->output))
+        $propertiesArray = collect(explode(';', $propertiesString))
            ->flatMap(function ($attribute) {
                 $keyValuePairs = explode(':', $attribute);
                 return [$keyValuePairs[0] => $keyValuePairs[1]];

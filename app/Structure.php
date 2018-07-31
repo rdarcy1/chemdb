@@ -35,7 +35,21 @@ class Structure extends Model
             return $candidate->id;
         });
 
-        $matchingStructureIds = Matchmol::match($queryStructure, $candidateIds)->combineCandidateMolfiles();
+        $matchingStructureIds = Matchmol::match($queryStructure, $candidateIds)->substructure();
+
+        return Structure::find($matchingStructureIds);
+    }
+
+    public function getExactMatchesAttribute()
+    {
+        $queryStructure = $this->molfile;
+
+        $candidateIds = $this->getCandidates()->map(function($candidate) {
+            return $candidate->id;
+        });
+
+        $matchingStructureIds = Matchmol::match($queryStructure, $candidateIds)->exact();
+
         return Structure::find($matchingStructureIds);
     }
 

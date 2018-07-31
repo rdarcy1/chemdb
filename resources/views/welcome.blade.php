@@ -7,89 +7,59 @@
 
         <title>Laravel</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
         <!-- Styles -->
         <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
+            #mobile-editor {
+                width: 550px;
+                height: 350px;
             }
 
-            .full-height {
-                height: 100vh;
+            @media only screen and (max-width: 768px) {
+                #mobile-editor {
+                    width: 320px;
+                    height: 300px;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                }
             }
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
         </style>
+        
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.11.2/dojo/dojo.js"></script>
+        <script type="text/javascript" src='/js/JSDraw/Scilligence.JSDraw2.Pro.js'></script>
+
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
+       <center>
+           <h2 class="text-green">Search</h2> 
+                <div class="wrapper" style="width: 1px; height: 1px; overflow:hidden;">
+                    <div class='JSDraw' id="large-editor" style="width:750px; height:350px"
+                        dataformat='molfile' data=""></div>
                 </div>
 
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
-        </div>
+                <div class="JSDraw" id="mobile-editor" skin="w8" ondatachange='molchange'></div>
+                
+                <form action="/search" method="POST">
+                    {{ csrf_field() }}
+                    <input type="text" name="molfile" id="molfile" value="">
+                
+                    <button class="mt-4 rounded bg-blue-dark px-4 py-2 text-white shadow-lg hover:bg-blue">Search</button>
+                </form>
+
+       </center>
+
+
+        <script type="text/javascript">
+            dojo.addOnLoad(function() {
+                var jsd2 = new JSDraw("large-editor");
+                new JSDraw("mobile-editor").setHtml(jsd2.getHtml());
+            });
+            function molchange(jsdraw) {
+                document.getElementById("molfile").value = JSDraw.get("mobile-editor").getMolfile();
+            }
+        </script>
+
     </body>
 </html>

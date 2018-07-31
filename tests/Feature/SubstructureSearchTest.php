@@ -79,6 +79,36 @@ class SubstructureSearchTest extends TestCase
         $this->assertTrue($substructureQuery->matches->contains($propanol));
         $this->assertTrue($substructureQuery->matches->contains($propanediol));
         $this->assertFalse($substructureQuery->matches->contains($isopropanol));
+   }
 
+   /** @test */
+   function it_can_return_exact_structure_matches()
+   {
+       // given we the following alcohols in the database:
+       // 2-propanol, 1-propanol, 1,3-propanediol
+       $isopropanol = Structure::storeMolfile(
+           file_get_contents("tests/Molfiles/2-propanol.mol")
+       );
+       // 1-propanol
+       $propanol = Structure::storeMolfile(
+           file_get_contents("tests/Molfiles/1-propanol.mol")
+       );
+       // 1,3-propanediol
+       $propanediol = Structure::storeMolfile(
+           file_get_contents("tests/Molfiles/propanediol.mol")
+       );
+
+       // And we search for propanol
+       $substructureQuery = Structure::fromMolfile(
+           file_get_contents("tests/Molfiles/1-propanol.mol")
+       );
+
+       // then, when we filter through the exact matches
+       // we only expect 1-propanol, not isopropanol or propanediol
+       $this->assertEquals(1, $substructureQuery->exactMatches->count());
+
+       $this->assertTrue($substructureQuery->exactMatches->contains($propanol));
+       $this->assertFalse($substructureQuery->exactMatches->contains($isopropanol));
+       $this->assertFalse($substructureQuery->exactMatches->contains($propanediol));
    }
 }

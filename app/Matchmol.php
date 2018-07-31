@@ -4,7 +4,6 @@ namespace App;
 
 class Matchmol {
 
-    protected $output;
     protected $binary = "/usr/local/bin/matchmol";
 
     protected $queryStructure;
@@ -21,47 +20,72 @@ class Matchmol {
         return new Matchmol($queryStructure, $candidateIds);   
     }
 
-    public function combineCandidateMolfiles()
+    public function substructure()
     {
-        $combinedMolfile[] = preg_replace("/^[A-Z]+\d+.*/", "", $this->queryStructure);
+        $matchResults = BashCommand::run($this->buildQuery(), $this->binary, '-');
 
-        foreach($this->candidateIds as $candidate) {
-            $structure = Structure::find($candidate)->molfile;
-            $structure = preg_replace("/^[A-Z]+\d+.*/", "", $structure);
-            $combinedMolfile[] = $structure;
+        $resultsArray = $this->generateResultsArray($matchResults);
+
+        return $this->filterMatchingCanidateIds($resultsArray);
+    }
+
+    public function exact()
+    {
+        $matchResults = BashCommand::run($this->buildQuery(), $this->binary, '-x -');
+
+        $resultsArray = $this->generateResultsArray($matchResults);
+
+        return $this->filterMatchingCanidateIds($resultsArray);
+    }
+
+    protected function buildQuery()
+    {
+        $molfilesArray[] = $this->trimFormula($this->queryStructure);
+
+        foreach ($this->candidateIds as $candidate) {
+            $molfilesArray[] = $this->trimFormula(
+                Structure::find($candidate)->molfile
+            );
         }
 
-        $combinedMolfile = implode($combinedMolfile);
-        
-        $combinedMolfile = preg_replace('/\$+$/', '', $combinedMolfile);
+        $formattedQuery = $this->formatQuery($molfilesArray);
 
-        $combinedMolfile = str_replace('$', '\$', $combinedMolfile);
+        return $formattedQuery;
+    }
 
+    protected function trimFormula($molfile)
+    {
+        return preg_replace("/^[A-Z]+\d+.*/", "", $molfile);
+    }
 
-        // dd($combinedMolfile);
+    protected function formatQuery($molfilesArray) {
 
-        $command = 'echo "' . $combinedMolfile . '" | ' . $this->binary . ' -';
-        $pipe = popen($command, "r");
-        
-        while(!feof($pipe)) {
-            $this->output .= fread($pipe, 1024);
-        }
-        pclose($pipe);
+        $molfileString = implode($molfilesArray);
 
-        $results = explode("\n", $this->output);
-        $results = array_splice($results, 0, -1);
+        $molfileString = preg_replace('/\$+$/', '', $molfileString);
 
+        return str_replace('$', '\$', $molfileString);
+    }
+
+    protected function generateResultsArray($matchResults)
+    {
+        $resultsArray = explode("\n", $matchResults);
+        return array_splice($resultsArray, 0, -1);
+    }
+
+    protected function filterMatchingCanidateIds(array $resultsArray)
+    {
         $resultIds = [];
 
-        foreach($results as $result) {
+        foreach($resultsArray as $result) {
             $match = explode(":", trim($result));
             if($match[1] == "T") {
-                $resultIds[] = $match[0];   
+                $resultIds[] = $match[0];
             }
         }
 
         foreach($resultIds as $resultId) {
-            $matchingCandidateIds[] = $this->candidateIds[$resultId-1]; 
+            $matchingCandidateIds[] = $this->candidateIds[$resultId-1];
         }
 
         return $matchingCandidateIds;
