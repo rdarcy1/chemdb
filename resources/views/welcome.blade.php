@@ -43,7 +43,7 @@
                 
                 <form action="/search" method="POST">
                     {{ csrf_field() }}
-                    <input type="text" name="molfile" id="molfile" value="">
+                    <input type="hidden" name="molfile" id="molfile" value="">
                 
                     <button class="mt-4 rounded bg-blue-dark px-4 py-2 text-white shadow-lg hover:bg-blue">Search</button>
                 </form>

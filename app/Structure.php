@@ -10,15 +10,40 @@ class Structure extends Model
 {
     protected $guarded = [];
 
-    public static function fromMolfile($molfile) {
+    public function chemical()
+    {
+        return $this->belongsTo(Chemical::class);
+    }
+
+    public static function makeFromMolfile($molfile) {
         return self::make(
             Checkmol::propertiesFor($molfile)
         );
     }
 
-    public static function storeMolfile($molfile) {
+    public static function createFromMolfile($molfile) {
         return self::create(
             Checkmol::propertiesFor($molfile)
+        );
+    }
+
+    public static function makeFromJSDraw($query)
+    {
+        $query = preg_replace('/^\\n/m', '', $query);
+        $query = "\r\n" . "$query";
+
+        return self::make(
+            Checkmol::propertiesFor($query)
+        );
+    }
+
+    public static function createFromJSDraw($query)
+    {
+        $query = preg_replace('/^\\n/m', '', $query);
+        $query = "\r\n" . "$query";
+
+        return self::create(
+            Checkmol::propertiesFor($query)
         );
     }
 

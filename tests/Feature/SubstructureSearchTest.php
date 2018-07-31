@@ -16,20 +16,20 @@ class SubstructureSearchTest extends TestCase
    {
         // Given we have the three structures in the database
         // chlorobenzene, indole and cyclohexanone
-        $chlorobenzene = Structure::storeMolfile(
+        $chlorobenzene = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/chlorobenzene.mol")
         );
 
-        $indole = Structure::storeMolfile(
+        $indole = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/indole.mol")
         );
         
-        $cyclohexanone = Structure::storeMolfile(
+        $cyclohexanone = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/cyclohexanone.mol")
         );
 
         // When we search for benzene as a substructure
-        $substructureQuery = Structure::fromMolfile(
+        $substructureQuery = Structure::makeFromMolfile(
             file_get_contents("tests/Molfiles/benzene.mol")
         );
 
@@ -47,20 +47,20 @@ class SubstructureSearchTest extends TestCase
    {
         // given we the following alcohols in the database:
         // 2-propanol, 1-propanol, 1,3-propanediol
-        $isopropanol = Structure::storeMolfile(
+        $isopropanol = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/2-propanol.mol")
         ); 
         // 1-propanol
-        $propanol = Structure::storeMolfile(
+        $propanol = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/1-propanol.mol")
         ); 
         // 1,3-propanediol
-        $propanediol = Structure::storeMolfile(
+        $propanediol = Structure::createFromMolfile(
             file_get_contents("tests/Molfiles/propanediol.mol")
         );
 
         // And we search for propanol
-        $substructureQuery = Structure::fromMolfile(
+        $substructureQuery = Structure::makeFromMolfile(
             file_get_contents("tests/Molfiles/1-propanol.mol")
         );
         
@@ -86,20 +86,20 @@ class SubstructureSearchTest extends TestCase
    {
        // given we the following alcohols in the database:
        // 2-propanol, 1-propanol, 1,3-propanediol
-       $isopropanol = Structure::storeMolfile(
+       $isopropanol = Structure::createFromMolfile(
            file_get_contents("tests/Molfiles/2-propanol.mol")
        );
        // 1-propanol
-       $propanol = Structure::storeMolfile(
+       $propanol = Structure::createFromMolfile(
            file_get_contents("tests/Molfiles/1-propanol.mol")
        );
        // 1,3-propanediol
-       $propanediol = Structure::storeMolfile(
+       $propanediol = Structure::createFromMolfile(
            file_get_contents("tests/Molfiles/propanediol.mol")
        );
 
        // And we search for propanol
-       $substructureQuery = Structure::fromMolfile(
+       $substructureQuery = Structure::makeFromMolfile(
            file_get_contents("tests/Molfiles/1-propanol.mol")
        );
 
@@ -111,4 +111,5 @@ class SubstructureSearchTest extends TestCase
        $this->assertFalse($substructureQuery->exactMatches->contains($isopropanol));
        $this->assertFalse($substructureQuery->exactMatches->contains($propanediol));
    }
+
 }

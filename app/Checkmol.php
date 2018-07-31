@@ -19,7 +19,6 @@ class Checkmol
     public function properties()
     {
         $propertiesString = BashCommand::run($this->molfile, $this->binary, '-x -');
-
         $propertiesString = substr($propertiesString, 0, -2);
 
         $propertiesArray = collect(explode(';', $propertiesString))
