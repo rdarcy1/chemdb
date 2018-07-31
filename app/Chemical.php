@@ -18,4 +18,9 @@ class Chemical extends Model
     {
         return $this->belongsTo(Structure::class);
     }
+
+    public function bottles()
+    {
+        return $this->hasMany(Bottle::class);
+    }
 }

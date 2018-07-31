@@ -27,46 +27,6 @@ class ChemicalsTest extends TestCase
     }
 
     /** @test **/
-    public function it_has_a_location()
-    {
-       $chemical = factory('App\Chemical')->create(['location' => 'Fake lab I']);
-
-        $this->assertEquals('Fake lab I', $chemical->location);
-    }
-
-    /** @test **/
-    public function it_has_a_number()
-    {
-       $chemical = factory('App\Chemical')->create(['number' => 3]);
-
-        $this->assertEquals(3, $chemical->number);
-    }
-
-    /** @test **/
-    public function it_has_a_quantity()
-    {
-       $chemical = factory('App\Chemical')->create(['quantity' => '50 mL']);
-
-        $this->assertEquals('50 mL', $chemical->quantity);
-    }
-
-     /** @test **/
-    public function it_has_a_supplier()
-    {
-       $chemical = factory('App\Chemical')->create(['supplier' => 'Sigma Aldrich']);
-
-        $this->assertEquals('Sigma Aldrich', $chemical->supplier);
-    }
-
-     /** @test **/
-    public function it_has_a_purity()
-    {
-       $chemical = factory('App\Chemical')->create(['purity' => '99%']);
-
-        $this->assertEquals('99%', $chemical->purity);
-    }
-
-    /** @test **/
     public function it_has_a_molecular_weight()
     {
         $chemical = factory('App\Chemical')->create(['molecular_weight' => 123.45]);
@@ -109,6 +69,33 @@ class ChemicalsTest extends TestCase
         
         $this->assertEquals(999, $chemical->structure->id);
         $this->assertEquals(10, $chemical->structure->n_C);
+    }
+
+    /** @test */
+    public function a_chemical_has_many_bottles()
+    {
+        // Given we have a chemical (and a structure) in the database
+        $chemical = factory('App\Chemical')->create(['name' => 'Fake Chemical']);
+
+        // when we append two bottles to it
+        $bottle1 = factory('App\Bottle')->create([
+            'chemical_id'   => $chemical->id,
+            'quantity'      => '25 g',
+        ]);
+
+        $bottle2 = factory('App\Bottle')->create([
+            'chemical_id'   => $chemical->id,
+            'quantity'      => '1 kg',
+            'supplier'      => 'Fluorochem',
+        ]);
+
+        // we can retrieve the chemical from the bottle
+        $this->assertEquals('Fake Chemical', $bottle1->fresh()->chemical->name);
+
+        // we can also retrieve the bottles from the chemical
+        $this->assertEquals(2, $chemical->bottles->count());
+        $this->assertEquals('25 g', $chemical->bottles[0]->quantity);
+        $this->assertEquals('Fluorochem', $chemical->bottles[1]->supplier);
     }
 
     

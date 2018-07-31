@@ -16,12 +16,7 @@ $factory->define(Chemical::class, function (Faker $faker) {
         'user_id'           => function() { return factory('App\User')->create()->id; },
         'structure_id'      => function() { return factory('App\Structure')->create()->id; },
         'cas'               => $faker->numberBetween(10,50) . '-' . $faker->numberBetween(10,50) . '-' . $faker->numberBetween(10,50),
-        'location'          => array_rand(['Fake lab I', 'Fake lab II', 'Fake lab III']),
-        'number'            => $faker->numberBetween(10,400),
-        'quantity'          => $faker->numberBetween(10,400) . ' mL',
-        'supplier'          => array_rand(['Sigma Aldrich', 'Acros', 'Fischer Scientific', 'J&K', 'Fluorochem']),
-        'purity'            => $faker->numberBetween(94, 99) .'%', 
-        'molecular_weight'  => $faker->randomFloat(2, 0, 100), 
+        'molecular_weight'  => $faker->randomFloat(2, 0, 100),
         'density'           => $faker->randomFloat(2, 0, 1), 
         'remarks'           => $faker->sentence(), 
     ];

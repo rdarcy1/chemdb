@@ -19,11 +19,6 @@ class CreateChemicalsTable extends Migration
             $table->unsignedInteger('structure_id');
             $table->string('name');
             $table->string('cas');
-            $table->string('location');
-            $table->unsignedInteger('number');
-            $table->string('quantity');
-            $table->string('supplier');
-            $table->string('purity');
             $table->float('molecular_weight');
             $table->float('density');
             $table->text('remarks');
