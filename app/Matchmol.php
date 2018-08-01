@@ -23,7 +23,6 @@ class Matchmol {
     public function substructure()
     {
         $matchResults = BashCommand::run($this->buildQuery(), $this->binary, '-');
-
         $resultsArray = $this->generateResultsArray($matchResults);
 
         return $this->filterMatchingCanidateIds($resultsArray);
@@ -60,8 +59,12 @@ class Matchmol {
 
     protected function formatQuery($molfilesArray) {
 
-        $molfileString = implode($molfilesArray);
+        // remove all present '$$$$' separators
+        foreach ($molfilesArray as $molfile) {
+            $strippedMolfileArray[] = preg_replace('/\$+/', '', $molfile);
+        }
 
+        $molfileString = implode($strippedMolfileArray, "\n $$$$ \n");
         $molfileString = preg_replace('/\$+$/', '', $molfileString);
 
         return str_replace('$', '\$', $molfileString);
@@ -83,6 +86,8 @@ class Matchmol {
                 $resultIds[] = $match[0];
             }
         }
+
+        $matchingCandidateIds = [];
 
         foreach($resultIds as $resultId) {
             $matchingCandidateIds[] = $this->candidateIds[$resultId-1];
