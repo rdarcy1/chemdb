@@ -20,8 +20,8 @@ class CreateChemicalsTable extends Migration
             $table->string('name');
             $table->string('cas');
             $table->float('molecular_weight');
-            $table->float('density');
-            $table->text('remarks');
+            $table->float('density')->nullable();
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }
