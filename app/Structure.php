@@ -47,6 +47,11 @@ class Structure extends Model
         );
     }
 
+    public function generateSVG()
+    {
+        Mol2SVG::create($this->molfile, $this->id);
+    }
+
     public function getCandidatesAttribute()
     {
         return $this->getCandidates();

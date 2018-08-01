@@ -86,6 +86,7 @@ M  END";
   6  3  2  0  0  0  0\r\n
 M  END";
 
+
         Structure::makeFromJSDraw($query)->save();
 
         $this->assertDatabaseHas('structures', [
@@ -94,5 +95,23 @@ M  END";
             'n_C'       => 6,
             'n_rings'   => 1
         ]);
+    }
+    
+    /** @test */
+    function a_structure_generates_an_SVG_when_necessary()
+    {
+        // When we add a new structure to the database
+        $structure = Structure::createFromMolfile(
+            file_get_contents("tests/Molfiles/1-propanol.mol")
+        );
+
+        // And then generate the SVG for this structure
+        $structure->generateSVG();
+
+        // We expect the SVG to be saved
+        $path = 'public/molfiles/svg';
+        $this->assertFileExists($path . '/' . $structure->id . '.svg');
+
+        unlink($path . '/' . $structure->id . '.svg');
     }
 }
