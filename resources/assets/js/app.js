@@ -15,8 +15,20 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('substructure-search', require('./components/SubstructureSearch.vue'));
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    data() {
+        return {
+            textSearch: true,
+        }
+    },
+
+    methods: {
+        toggleTextSearch() {
+            this.textSearch = !this.textSearch;
+        }
+
+    }
 });

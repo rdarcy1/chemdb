@@ -34,12 +34,8 @@
     <body>
        <center>
            <h2 class="text-green">Search</h2> 
-                <div class="wrapper" style="width: 1px; height: 1px; overflow:hidden;">
-                    <div class='JSDraw' id="large-editor" style="width:750px; height:350px"
-                        dataformat='molfile' data=""></div>
-                </div>
 
-                <div class="JSDraw" id="mobile-editor" skin="w8" ondatachange='molchange'></div>
+                <div class="JSDraw" id="mobile-editor" dataformat='molfile' skin="w8" ondatachange='molchange'></div>
                 
                 <form action="/search" method="POST">
                     {{ csrf_field() }}
@@ -53,8 +49,7 @@
 
         <script type="text/javascript">
             dojo.addOnLoad(function() {
-                var jsd2 = new JSDraw("large-editor");
-                new JSDraw("mobile-editor").setHtml(jsd2.getHtml());
+                var jsd2 = new JSDraw("mobile-editor");
             });
             function molchange(jsdraw) {
                 document.getElementById("molfile").value = JSDraw.get("mobile-editor").getMolfile();
