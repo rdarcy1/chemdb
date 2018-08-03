@@ -3,6 +3,7 @@
 /public/storage
 /public/molfiles/svg/*
 /storage/*.key
+/import-molfiles
 /vendor
 /.idea
 /.vscode

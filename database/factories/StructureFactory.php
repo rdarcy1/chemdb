@@ -60,5 +60,6 @@ $factory->define(Structure::class, function (Faker $faker) {
         'n_rX'         => $faker->numberBetween(0, 10),
         'n_rS'         => $faker->numberBetween(0, 10),
         'molfile'      => 'fake molfile',
+        'chemical_id'   => 999,
     ];
 });

@@ -13,8 +13,7 @@
 @endsection
 
 @section('content')
-
-    <div class="h-screen mb-10 pt-10">
+    <div class="h-screen mb-10 pt-6">
         <div class="flex justify-center mb-6">
             <div class="w-screen flex justify-center">
                 <div class="flex flex-col justify-center items-center">

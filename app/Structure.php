@@ -67,7 +67,12 @@ class Structure extends Model
 
         $matchingStructureIds = Matchmol::match($queryStructure, $candidateIds)->substructure();
 
-        return Structure::find($matchingStructureIds);
+        $matchingStructures = Structure::with('chemical')
+            ->whereIn('id', $matchingStructureIds)
+            ->orderBy('n_atoms', 'ASC')
+            ->get();
+
+        return $matchingStructures;
     }
 
     public function getExactMatchesAttribute()
@@ -92,5 +97,59 @@ class Structure extends Model
         }
 
         return self::where($query)->get();
+    }
+
+    public static function import($directory = 'import-molfiles')
+    {
+        $files = scandir($directory);
+
+        foreach($files as $filename) {
+            if($filename[0] == '.' || $filename[0] == '..') {
+                continue;
+            }
+
+            $path = $directory . '/' . $filename;
+
+            $molfile = file_get_contents($path);
+
+            preg_match('/(\d+)\.mol/', $filename, $matches);
+
+            $id = $matches[1];
+
+            Structure::where('chemical_id', $id)->update(['molfile' => $molfile]);
+
+        }
+
+        return 'finished';
+    }
+
+    public static function syncChemicals() {
+        $structures = Structure::all();
+
+        foreach($structures as $structure) {
+            if(!$chemical = Chemical::find($structure->chemical_id)) {
+                continue;
+            }
+
+            $chemical->structure_id = $structure->id;
+            $chemical->save();
+        }
+    }
+
+    public static function purge() {
+        // delete all structures of which the chemical does not exist
+        $structures = Structure::all();
+
+        foreach($structures as $structure) {
+            echo 'running structure id ' . $structure->id;
+
+            if ( ! $chemical = Chemical::find($structure->chemical_id)) {
+                // if the chemical is not found, let's delete the structure
+                echo 'deleted ' . $structure->id;
+                echo '\n';
+
+                $structure->delete();
+            }
+        }
     }
 }

@@ -16,15 +16,21 @@ class SearchController extends Controller
 
     public function substructureSearch(Request $request)
     {
+        $searchType = 'substructure';
+
         $queryStructure = Structure::makeFromJSDraw($request->molfile);
-        $matchedStructures = $queryStructure->matches;
+        $matches = $queryStructure->matches;
 
-        $matchingStructureIds = $matchedStructures->map(function($match) {
-            return $match->id;
-        })->toArray();
+        return view('search.substructure.results', compact('matches', 'searchType'));
+    }
 
-        $chemicals = Chemical::whereIn('structure_id', $matchingStructureIds)->get();
+    public function textSearch(Request $request)
+    {
+        $searchType = 'text';
 
-        return view('search.substructure.results', compact('chemicals'));
+        $matches = Chemical::where('name', 'like', $request->q)->pluck('structure_id');
+        $matches = Structure::whereIn('id', $matches)->with('chemical')->orderBy('n_atoms')->get();
+
+        return view('search.substructure.results', compact('matches', 'searchType'));
     }
 }

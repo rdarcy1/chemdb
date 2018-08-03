@@ -29,7 +29,7 @@ class StructuresTest extends TestCase
         $molfile = file_get_contents("tests/Molfiles/chlorobenzene.mol");
         
         Structure::makeFromMolfile($molfile)->save();
-        
+
         $this->assertDatabaseHas('structures', [
             'n_atoms'   => 7,
             'n_bonds'   => 7,
@@ -98,7 +98,7 @@ M  END";
     }
     
     /** @test */
-    function a_structure_generates_an_SVG_when_necessary()
+    function a_structure_saves_its_SVG_data_in_the_database()
     {
         // When we add a new structure to the database
         $structure = Structure::createFromMolfile(

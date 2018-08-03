@@ -32,6 +32,9 @@ class ChemicalController extends Controller
             'user_id'           => 1
         ]);
 
+        $structure->chemical_id = $chemical->id;
+        $structure->save();
+
         return $chemical;
     }
 }

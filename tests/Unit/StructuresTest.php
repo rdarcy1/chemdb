@@ -438,8 +438,17 @@ class StructuresTest extends TestCase
     function it_has_a_molfile()
     {
        $structure = factory('App\Structure')->create(['molfile' => 'fake molfile']);
-       
+
        $this->assertEquals('fake molfile', $structure->molfile);
+    }
+
+    /** @test */
+    function it_belongs_to_a_chemical()
+    {
+        $chemical = factory('App\Chemical')->create(['name' => '2-fake-formaldehyde']);
+        $structure = factory('App\Structure')->create(['chemical_id' => $chemical->id]);
+
+        $this->assertEquals('2-fake-formaldehyde', $structure->chemical->name);
     }
 
 }

@@ -8,11 +8,17 @@ class Matchmol {
 
     protected $queryStructure;
     protected $candidateIds;
+    protected $candidateCount;
+    protected $candidatesPerQuery = 20;
+    protected $candidatesArray;
 
     public function __construct($queryStructure, $candidateIds)
     {
-        $this->queryStructure = $queryStructure;
-        $this->candidateIds = $candidateIds;
+        $this->queryStructure   = $queryStructure;
+        $this->candidateIds     = $candidateIds;
+        $this->candidateCount   = $candidateIds->count();
+
+        $this->buildCandidatesArray();
     }
 
     public static function match($queryStructure, $candidateIds)
@@ -22,10 +28,22 @@ class Matchmol {
 
     public function substructure()
     {
-        $matchResults = BashCommand::run($this->buildQuery(), $this->binary, '-');
-        $resultsArray = $this->generateResultsArray($matchResults);
+        // Number of times Matchmol has to be called with the maximum candidatesPerQuery
+        $blocks = ceil($this->candidateCount / $this->candidatesPerQuery);
 
-        return $this->filterMatchingCanidateIds($resultsArray);
+        $matches = [];
+
+        for($i = 1; $i <= $blocks; $i++) {
+            $matchResults = BashCommand::run($this->buildQuery($i), $this->binary, '-');
+
+            $resultsArray = $this->generateResultsArray($matchResults);
+
+            $matches[] = $this->filterMatchingCanidateIds($resultsArray, $i);
+        }
+
+        $result = array_flatten($matches);
+
+        return $result;
     }
 
     public function exact()
@@ -37,19 +55,16 @@ class Matchmol {
         return $this->filterMatchingCanidateIds($resultsArray);
     }
 
-    protected function buildQuery()
+    protected function buildQuery($cycle)
     {
-        $molfilesArray[] = $this->trimFormula($this->queryStructure);
+        $offset = ($cycle-1) * $this->candidatesPerQuery;
 
-        foreach ($this->candidateIds as $candidate) {
-            $molfilesArray[] = $this->trimFormula(
-                Structure::find($candidate)->molfile
-            );
-        }
+        // slice the candidates and prepend the target structure
+        $candidates = array_slice($this->candidatesArray, $offset, $this->candidatesPerQuery);
 
-        $formattedQuery = $this->formatQuery($molfilesArray);
+        array_unshift($candidates, $this->trimFormula($this->queryStructure));
 
-        return $formattedQuery;
+        return $this->formatQuery($candidates);
     }
 
     protected function trimFormula($molfile)
@@ -73,13 +88,16 @@ class Matchmol {
     protected function generateResultsArray($matchResults)
     {
         $resultsArray = explode("\n", $matchResults);
-        return array_splice($resultsArray, 0, -1);
+        $result = array_splice($resultsArray, 0, -1);
+
+        return $result;
     }
 
-    protected function filterMatchingCanidateIds(array $resultsArray)
+    protected function filterMatchingCanidateIds($resultsArray, $cycle)
     {
         $resultIds = [];
 
+        // array filter
         foreach($resultsArray as $result) {
             $match = explode(":", trim($result));
             if($match[1] == "T") {
@@ -87,12 +105,28 @@ class Matchmol {
             }
         }
 
+        $offset = ($cycle-1) * $this->candidatesPerQuery;
+
         $matchingCandidateIds = [];
 
         foreach($resultIds as $resultId) {
-            $matchingCandidateIds[] = $this->candidateIds[$resultId-1];
+            $id = $resultId-1;
+            $matchingCandidateIds[] = $this->candidateIds[$id+$offset];
         }
 
         return $matchingCandidateIds;
+    }
+
+    private function buildCandidatesArray()
+    {
+        $molfilesArray = [];
+
+        foreach ($this->candidateIds as $candidate) {
+            $molfilesArray[] = $this->trimFormula(
+                Structure::find($candidate)->molfile
+            );
+        }
+
+        $this->candidatesArray = $molfilesArray;
     }
 }

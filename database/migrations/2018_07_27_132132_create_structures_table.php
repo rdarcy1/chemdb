@@ -15,6 +15,7 @@ class CreateStructuresTable extends Migration
     {
         Schema::create('structures', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('chemical_id')->nullable();
             $table->unsignedTinyInteger('n_atoms');
             $table->unsignedTinyInteger('n_bonds');
             $table->unsignedTinyInteger('n_rings')->default(0);
@@ -69,7 +70,7 @@ class CreateStructuresTable extends Migration
             $table->unsignedTinyInteger('n_rS')->default(0);
             $table->unsignedTinyInteger('n_rX')->default(0);
             $table->unsignedTinyInteger('n_rar')->default(0);
-            $table->longText('molfile');
+            $table->longText('molfile')->nullable();
             $table->timestamps();
         });
     }
