@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Chemical;
 use App\Structure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -28,8 +28,9 @@ class SearchController extends Controller
     {
         $searchType = 'text';
 
-        $matches = Chemical::where('name', 'like', $request->q)->pluck('structure_id');
-        $matches = Structure::whereIn('id', $matches)->with('chemical')->orderBy('n_atoms')->get();
+        $matches = Structure::whereHas('chemical', function (Builder $query) use ($request) {
+            $query->where('name', 'like', $request->q);
+        })->with('chemical')->orderBy('n_atoms')->get();
 
         return view('search.substructure.results', compact('matches', 'searchType'));
     }
